@@ -91,9 +91,12 @@ void QgsGPSPluginGui::on_buttonBox_accepted()
   switch ( tabWidget->currentIndex() )
   {
     case 0:
-      // add a GPX layer?
-      emit loadGPXFile( leGPXFile->text(), cbGPXWaypoints->isChecked(),
-                        cbGPXRoutes->isChecked(), cbGPXTracks->isChecked() );
+      {
+        for ( QStringList::Iterator it = mOpenFilenames.begin(); it != mOpenFilenames.end(); ++it ) {
+          emit loadGPXFile( *it, cbGPXWaypoints->isChecked(),
+                            cbGPXRoutes->isChecked(), cbGPXTracks->isChecked() );
+        }
+      }
       break;
 
     case 1:
@@ -251,15 +254,17 @@ void QgsGPSPluginGui::on_pbnGPXSelectFile_clicked()
 {
   QgsLogger::debug( " GPS File Importer::pbnGPXSelectFile_clicked() " );
   QSettings settings;
-  QString dir = settings.value( "/Plugin-GPS/gpxdirectory", "." ).toString();
-  QString myFileNameQString = QFileDialog::getOpenFileName(
-                                this,
-                                tr( "Select GPX file" ),
-                                dir,
-                                tr( "GPS eXchange format" ) + " (*.gpx)" );
-  if ( !myFileNameQString.isEmpty() )
+  QString dir = settings.value( "/Plugin-GPS/gpxdirectory" ).toString();
+  if ( dir.isEmpty() )
+    dir = ".";
+  mOpenFilenames = QFileDialog::getOpenFileNames(
+                                this, //parent dialog
+                                tr( "Select GPX file" ), //caption
+                                dir, //initial dir
+                                tr( "GPS eXchange format (*.gpx)" ) );
+  if ( !mOpenFilenames.isEmpty() )
   {
-    leGPXFile->setText( myFileNameQString );
+    leGPXFile->setText( mOpenFilenames.join( "; " ) );
     settings.setValue( "/Plugin-GPS/gpxdirectory", QFileInfo( myFileNameQString ).absolutePath() );
   }
 }
