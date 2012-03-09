@@ -265,7 +265,7 @@ void QgsGPSPluginGui::on_pbnGPXSelectFile_clicked()
   if ( !mOpenFilenames.isEmpty() )
   {
     leGPXFile->setText( mOpenFilenames.join( "; " ) );
-    settings.setValue( "/Plugin-GPS/gpxdirectory", QFileInfo( myFileNameQString ).absolutePath() );
+    settings.setValue( "/Plugin-GPS/gpxdirectory", QFileInfo( mOpenFilenames[0] ).absolutePath() );
   }
 }
 
